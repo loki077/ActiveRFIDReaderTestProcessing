@@ -1,22 +1,30 @@
 import processing.serial.*;
 
-Serial myPort;  
-
+Serial myPortTx;  
+Serial myPortRx;  
+String inBuffer;
+boolean bufferFlag = true;
 void setup() 
 {
-
 	printArray(Serial.list());
-	myPort = new Serial(this, Serial.list()[0], 19200);
+	myPortTx = new Serial(this, "COM10", 19200);
+	myPortRx = new Serial(this, "COM9", 19200);
 }
 
 void draw() 
 {
-	while (myPort.available() > 0) 
+	while (myPortRx.available() > 0) 
 	{
-		String inBuffer = myPort.readString();   
+		inBuffer = myPortRx.readString();   
 		if (inBuffer != null) 
 		{
+			bufferFlag = true;
 			println(inBuffer);
 		}
+	}
+	if(bufferFlag == false)
+	{
+		myPortTx.write(inBuffer);
+		bufferFlag = true;
 	}
 }
